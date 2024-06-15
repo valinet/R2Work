@@ -1,0 +1,62 @@
+;
+; WhSignalDrv.inf
+;
+
+[Version]
+Signature   = "$WINDOWS NT$"
+Class       = System ; TODO: specify appropriate Class
+ClassGuid   = {4d36e97d-e325-11ce-bfc1-08002be10318} ; TODO: specify appropriate ClassGuid
+Provider    = %ManufacturerName%
+CatalogFile = WhSignalDrv.cat
+DriverVer   = ; TODO: set DriverVer in stampinf property pages
+PnpLockdown = 1
+
+[DestinationDirs]
+DefaultDestDir = 13
+
+[SourceDisksNames]
+1 = %DiskName%,,,""
+
+[SourceDisksFiles]
+WhSignalDrv.sys = 1,,
+
+;*****************************************
+; Install Section
+;*****************************************
+
+[Manufacturer]
+%ManufacturerName% = Standard,NT$ARCH$.10.0...16299 ; %13% support introduced in build 16299
+
+[Standard.NT$ARCH$.10.0...16299]
+%WhSignalDrv.DeviceDesc% = WhSignalDrv_Device, Root\WhSignalDrv ; TODO: edit hw-id
+
+[WhSignalDrv_Device.NT]
+CopyFiles = File_Copy
+
+[File_Copy]
+WhSignalDrv.sys
+
+;-------------- Service installation
+[WhSignalDrv_Device.NT.Services]
+AddService = WhSignalDrv,%SPSVCINST_ASSOCSERVICE%, WhSignalDrv_Service_Inst
+
+; -------------- WhSignalDrv driver install sections
+[WhSignalDrv_Service_Inst]
+DisplayName    = %WhSignalDrv.SVCDESC%
+ServiceType    = 1               ; SERVICE_KERNEL_DRIVER
+StartType      = 3               ; SERVICE_DEMAND_START
+ErrorControl   = 1               ; SERVICE_ERROR_NORMAL
+ServiceBinary  = %13%\WhSignalDrv.sys
+
+[WhSignalDrv_Device.NT.Wdf]
+KmdfService = WhSignalDrv, WhSignalDrv_wdfsect
+
+[WhSignalDrv_wdfsect]
+KmdfLibraryVersion = $KMDFVERSION$
+
+[Strings]
+SPSVCINST_ASSOCSERVICE = 0x00000002
+ManufacturerName = "<Your manufacturer name>" ;TODO: Replace with your manufacturer name
+DiskName = "WhSignalDrv Installation Disk"
+WhSignalDrv.DeviceDesc = "WhSignalDrv Device"
+WhSignalDrv.SVCDESC = "WhSignalDrv Service"
